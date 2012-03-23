@@ -1,7 +1,6 @@
 from visual import *
 from math import *
 
-
 g = 9.80665
 
 class GravityMovement:
