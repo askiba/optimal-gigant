@@ -12,42 +12,30 @@ from math import cos,sin,pi
 g = 9.80665
  
 def prawa_strona_rownania(w, t, params):
-    ''' Argumenty:
-         w: wektor stanu (u nas x, v)
-         t: czas
-         params: wektor parametr�w (u nas omega_kwadrat)
- 
-     W wektorze f funkcja zwraca
-              obliczone dla danego wektora stanu
-              warto�ci prawej strony r�wnania
     '''
-    x, v = w                  # dla czytelno�ci r�wnania wypakowuj� zmienne z wektora "w"
-    alfa, mi,k  = params   # i podobnie z parametrami "params"
-    # poni�ej do tablicy f w kolejnych wierszach wpisuj�
-    # kolejne prawe strony r�wna� stanowi�cych uk�ad
-    f = [v,                   # warto�� pochodnej dx/dt
-         g*sin(alfa)-mi*g*cos(alfa)- k *v*v]  # warto�� pochodnej dv/dt
+        Arguments:
+            w: state vector(x,v)
+            t: time
+            params: parameters vector (alfa,mi,k) (k with mass "inside")
+        In vector f we get the values
+    '''
+    x, v = w
+    alfa, mi,k  = params
+    
+    f = [v,                                     # dx/dt
+         g*sin(alfa)-mi*g*cos(alfa)- k *v*v]    # dv/dt
     return f
 
 def calculate(alfa, mi,k):
     t = np.linspace(0, 5, 21)
     params = [alfa,mi,k]
-    w = [0, 0]                    # warunek pocz�tkowy (t=0) dla x i v
-    print "Wektor stanu w chwili pocz�tkowej: ",
-    print prawa_strona_rownania(w, t[0], params)
+    w = [0, 0]                    # initial condition (t=0) for x and v
      
-    # argumentami odeint s�:
-    # - nazwa funkcji,
-    # - wektor stanu pocz�tkowego,
-    # - wektor zawieraj�cy chwile czasu, dla kt�rych ma by� zwr�cony stan uk�adu
-    # - krotka zawieraj�ca dodatkowe parametry, kt�re maj� by� przekazane do funkcji
-    #           opisuj�cej prawe strony r�wna�
+    result = odeint(prawa_strona_rownania, w, t, args=(params,) ) 
      
-    wynik = odeint(prawa_strona_rownania, w, t, args=(params,) ) 
-     
-    x = wynik[:, 0]
-    v = wynik[:, 1]
-     
+    x = result[:, 0]
+    v = result[:, 1]
+    
     p.plot(t,x, t,v)
     p.legend(('x', 'v'))
     p.grid(True)
